@@ -3,14 +3,17 @@
 #include "spi.h"
 #include "ws2812_spi.h"
 
+#define ASSI_YELLOW WS2812_COLOR(0xFF, 0x80, 0)
+#define ASSI_BLUE WS2812_COLOR(0, 0, 0xFF)
+
 static as_state_t as_state = AS_TEST;
 
 static const uint32_t assi_color[AS_STATE_NUM] = {
     [AS_OFF] = WS2812_COLOR(0, 0, 0),
-    [AS_READY] = WS2812_COLOR(0xFF, 0xFF, 0),
-    [AS_DRIVING] = WS2812_COLOR(0xFF, 0xFF, 0),
-    [AS_EMERGENCY] = WS2812_COLOR(0, 0, 0xFF),
-    [AS_FINISHED] = WS2812_COLOR(0, 0, 0xFF)};
+    [AS_READY] = ASSI_YELLOW,
+    [AS_DRIVING] = ASSI_YELLOW,
+    [AS_EMERGENCY] = ASSI_BLUE,
+    [AS_FINISHED] = ASSI_BLUE};
 
 bool state_dirty = true;
 
