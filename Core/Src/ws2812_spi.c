@@ -8,8 +8,8 @@ uint32_t ws2812_spi_get_led(uint16_t index)
 }
 void ws2812_spi_set_led(uint16_t index, uint32_t color)
 {
-    // if (index >= WS2812_STRIP_LEN)
-    //  return;
+    if (index >= WS2812_STRIP_LEN)
+        return;
 
     for (uint8_t i = 0; i < 24; i++)
     {

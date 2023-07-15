@@ -35,14 +35,14 @@ uint32_t tick_get_100us(void)
     return tick_100us;
 }
 
-static uint8_t board_master;
-
-void utils_init()
+board_t utils_get_board_id()
 {
-    board_master = 0b00 == (HAL_GPIO_ReadPin(BOARD_ID_2_GPIO_Port, BOARD_ID_2_Pin) << 1 | HAL_GPIO_ReadPin(BOARD_ID_1_GPIO_Port, BOARD_ID_1_Pin));
-}
+    static board_t board = BOARD_NOT_SAMPLED;
 
-uint8_t utils_is_master()
-{
-    return board_master;
+    if (board == BOARD_NOT_SAMPLED)
+    {
+        board = HAL_GPIO_ReadPin(BOARD_ID_1_GPIO_Port, BOARD_ID_1_Pin) | (HAL_GPIO_ReadPin(BOARD_ID_2_GPIO_Port, BOARD_ID_2_Pin) << 1);
+    }
+
+    return board;
 }

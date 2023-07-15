@@ -3,6 +3,8 @@
 #include "main.h"
 #include "utils.h"
 
+#include "ws2812_spi.h"
+
 void can_recv(CAN_HandleTypeDef *hcan, uint8_t fifo)
 {
     CAN_RxHeaderTypeDef RxHeader;
@@ -12,7 +14,7 @@ void can_recv(CAN_HandleTypeDef *hcan, uint8_t fifo)
     {
         /* Transmission request Error */
         HAL_CAN_ResetError(hcan);
-        Error_Handler();
+        // Error_Handler();
     }
 
     /*Reboot Board - Received command byte from CAN*/
@@ -20,9 +22,12 @@ void can_recv(CAN_HandleTypeDef *hcan, uint8_t fifo)
     {
         NVIC_SystemReset();
     }
-    else if ((RxHeader.StdId == CAN_AS_STATE_ID) && (RxHeader.DLC == 1))
+    else if ((RxHeader.StdId == CAN_AS_STATE_ID))
     {
-        assi_set_state(RxData[0]);
+        if (RxData[1] <= AS_TEST)
+        {
+            assi_set_state(RxData[1]);
+        }
     }
     else if (RxHeader.StdId == CAN_ASSI_SYNC_ID && RxHeader.DLC == 1)
     {
@@ -48,7 +53,7 @@ void can_msg_send(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t aData[], uint8_t
         if (delay_fun(&can_counter_100us, TimeOut))
         {
             // Error_Handler();
-            HAL_CAN_ResetError(hcan);
+            // HAL_CAN_ResetError(hcan);
             HAL_CAN_AbortTxRequest(hcan, tx_mailbox);
         }
     }
@@ -57,7 +62,7 @@ void can_msg_send(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t aData[], uint8_t
     {
         /* Transmission request Error */
         // Error_Handler();
-        HAL_CAN_ResetError(hcan);
+        // HAL_CAN_ResetError(hcan);
         HAL_CAN_AbortTxRequest(hcan, tx_mailbox);
     }
 }

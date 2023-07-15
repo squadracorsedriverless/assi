@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = stoppah
+TARGET = assi
 
 
 ######################################
@@ -22,7 +22,7 @@ TARGET = stoppah
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -O2
 
 
 #######################################
@@ -36,6 +36,7 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
+Core/Src/adc.c \
 Core/Src/assi.c \
 Core/Src/can.c \
 Core/Src/can_comms.c \
@@ -52,6 +53,8 @@ Core/Src/utils.c \
 Core/Src/visEffect.c \
 Core/Src/ws2812_spi.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
+Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.c \
+Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_can.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
@@ -261,6 +264,58 @@ clean:
 #######################################
 
 
+
+
+#######################################
+# convert
+#######################################
+convert: 
+	bin2srec -a 0x8004000 -i $(BUILD_DIR)/$(TARGET).bin -o $(BUILD_DIR)/$(TARGET).srec
+      
+
+
+#######################################
+# canflash
+#######################################
+canflash: convert flash00 flash01 flash10 flash11
+	
+      
+
+
+#######################################
+# flash00
+#######################################
+flash00: convert
+	echo "flashing 00"; bootcommander -t=xcp_can -d=can0 -b=1000000 -tid=01F -rid=01E $(BUILD_DIR)/$(TARGET).srec;
+
+      
+
+
+#######################################
+# flash01
+#######################################
+flash01: convert
+	echo "flashing 01"; bootcommander -t=xcp_can -d=can0 -b=1000000 -tid=021 -rid=020 $(BUILD_DIR)/$(TARGET).srec;
+
+      
+
+
+#######################################
+# flash10
+#######################################
+flash10: convert
+	echo "flashing 10"; bootcommander -t=xcp_can -d=can0 -b=1000000 -tid=023 -rid=022 $(BUILD_DIR)/$(TARGET).srec;
+
+      
+
+
+#######################################
+# flash11
+#######################################
+flash11: convert
+	echo "flashing 11"; bootcommander -t=xcp_can -d=can0 -b=1000000 -tid=025 -rid=024 $(BUILD_DIR)/$(TARGET).srec;
+
+      
 	
 #######################################
 # dependencies

@@ -2,10 +2,11 @@
 #ifndef WS2812_SPI_H_
 #define WS2812_SPI_H_
 
+#include "spi.h"
 #include "stm32l4xx.h"
 #include <stdint.h>
 
-#define WS2812_STRIP_LEN 10
+#define WS2812_STRIP_LEN 34
 #define WS2812_BUF_LEN (WS2812_STRIP_LEN * 24)
 #define WS2812_BUF_RESET_LEN 0 // making this higher introduces glitches
 
