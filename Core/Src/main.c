@@ -67,19 +67,23 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim->Instance == TIM6) // assi sync
+    if (htim == &TIM_SYNC) // assi sync
     {
-        if (utils_get_board_id() == BOARD_RIGHT)
+        static uint8_t alt = 0;
+        if (utils_get_board_id() == BOARD_MASTER)
         {
-            static uint8_t alt = 0;
-            can_msg_send(&hcan1, CAN_ASSI_SYNC_ID, &alt, 1, 20);
-            assi_sync(alt);
-            alt = alt ? 0 : 1;
+            can_msg_send(&hcan1, CAN_ASSI_SYNC_ID, &alt, 1);
         }
+        assi_sync(alt);
+        alt = alt ? 0 : 1;
     }
-    if (htim->Instance == TIM7) // tick
+    else if (htim == &TIM_DSPACE_TIMEOUT)
     {
-        tick_100us++;
+        assi_set_state(AS_EMERGENCY); // comms with dspace lost
+    }
+    else if (htim == &TIM_SYNC_TIMEOUT)
+    {
+        HAL_TIM_Base_Start_IT(&TIM_SYNC); // start internal sync if external fails
     }
 }
 
@@ -123,23 +127,27 @@ int main(void)
     MX_SPI1_Init();
     MX_CAN1_Init();
     MX_TIM6_Init();
-    MX_TIM7_Init();
-    MX_IWDG_Init();
     MX_ADC1_Init();
+    MX_IWDG_Init();
+    MX_TIM7_Init();
+    MX_TIM16_Init();
     /* USER CODE BEGIN 2 */
-    HAL_TIM_Base_Start_IT(&htim6);
-    HAL_TIM_Base_Start_IT(&htim7);
     HAL_CAN_Start(&hcan1);
+
     if (utils_get_board_id() == BOARD_LEFT)
     {
         HAL_ADC_Start_DMA(&hadc1, (uint32_t *)air_press, 2);
     }
+    if (utils_get_board_id() == BOARD_MASTER)
+    {
+        HAL_TIM_Base_Start_IT(&TIM_SYNC);
+    }
+
+    HAL_TIM_Base_Start_IT(&TIM_SYNC_TIMEOUT);
 
     assi_init();
-    assi_set_state(AS_DRIVING);
 
     uint32_t time = 0;
-    uint32_t mailbox;
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -155,17 +163,8 @@ int main(void)
 
         if (utils_get_board_id() == BOARD_LEFT && HAL_GetTick() - time > 50)
         {
-            uint8_t data[2];
-            data[0] = press_front;
-            data[1] = press_rear;
-
             time = HAL_GetTick();
-            CAN_TxHeaderTypeDef header = {
-                .StdId = CAN_AIR_BRAKE_PRESS_ID,
-                .DLC = 2,
-            };
-
-            HAL_CAN_AddTxMessage(&hcan1, &header, data, &mailbox);
+            can_msg_send(&hcan1, CAN_AIR_BRAKE_PRESS_ID, (uint8_t[2]){press_front, press_rear}, 2);
         }
 
         /* USER CODE END WHILE */
@@ -235,6 +234,7 @@ void Error_Handler(void)
     /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
+
     while (1)
     {
     }

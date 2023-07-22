@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    tim.h
-  * @brief   This file contains all the function prototypes for
-  *          the tim.c file
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    tim.h
+ * @brief   This file contains all the function prototypes for
+ *          the tim.c file
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __TIM_H__
@@ -36,12 +36,19 @@ extern TIM_HandleTypeDef htim6;
 
 extern TIM_HandleTypeDef htim7;
 
+extern TIM_HandleTypeDef htim16;
+
 /* USER CODE BEGIN Private defines */
+
+#define TIM_SYNC htim6
+#define TIM_DSPACE_TIMEOUT htim7
+#define TIM_SYNC_TIMEOUT htim16
 
 /* USER CODE END Private defines */
 
 void MX_TIM6_Init(void);
 void MX_TIM7_Init(void);
+void MX_TIM16_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 

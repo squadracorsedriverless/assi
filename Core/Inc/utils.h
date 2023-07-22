@@ -2,8 +2,10 @@
 #define UTILS_H_
 #include <inttypes.h>
 
-#define BOARD_LEFT BOARD_10
-#define BOARD_RIGHT BOARD_00
+#define BOARD_MASTER BOARD_LEFT
+
+#define BOARD_LEFT BOARD_00
+#define BOARD_RIGHT BOARD_10
 #define BOARD_REAR BOARD_11
 
 typedef enum
@@ -15,7 +17,6 @@ typedef enum
     BOARD_11 = 0b11
 } board_t;
 
-extern uint32_t tick_100us;
 uint8_t delay_fun(uint32_t *delay_100us_last, uint32_t delay_100us);
 uint32_t tick_get_100us(void);
 

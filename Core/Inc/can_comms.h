@@ -11,6 +11,5 @@
 // Tx
 #define CAN_AIR_BRAKE_PRESS_ID 0x006 // TODO: change
 
-void can_recv(CAN_HandleTypeDef *hcan, uint8_t fifo);
-void can_msg_send(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t aData[], uint8_t dlc, uint32_t TimeOut);
+void can_msg_send(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t aData[], uint8_t dlc);
 #endif
