@@ -5,8 +5,9 @@
 #define BOARD_MASTER BOARD_LEFT
 
 #define BOARD_LEFT BOARD_00
-#define BOARD_RIGHT BOARD_10
-#define BOARD_REAR BOARD_11
+#define BOARD_RIGHT BOARD_01
+#define BOARD_REAR BOARD_10
+#define BOARD_AMI BOARD_11
 
 typedef enum
 {
