@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
 #include "can.h"
 #include "dma.h"
 #include "gpio.h"
@@ -53,8 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile uint8_t air_press[2];
-uint8_t press_front, press_rear;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,6 +65,8 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+    static bool first = true;
+
     if (htim == &TIM_SYNC) // assi sync
     {
         static uint8_t alt = 0;
@@ -79,18 +79,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
     else if (htim == &TIM_DSPACE_TIMEOUT)
     {
-        assi_set_state(AS_EMERGENCY); // comms with dspace lost
+        if (!first)
+            assi_set_state(AS_EMERGENCY); // comms with dspace lost
+        first = false;
     }
     else if (htim == &TIM_SYNC_TIMEOUT)
     {
         HAL_TIM_Base_Start_IT(&TIM_SYNC); // start internal sync if external fails
     }
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *adc)
-{
-    press_front = air_press[0];
-    press_rear = air_press[1];
 }
 
 /* USER CODE END 0 */
@@ -127,17 +123,12 @@ int main(void)
     MX_SPI1_Init();
     MX_CAN1_Init();
     MX_TIM6_Init();
-    MX_ADC1_Init();
     MX_IWDG_Init();
     MX_TIM7_Init();
     MX_TIM16_Init();
     /* USER CODE BEGIN 2 */
     HAL_CAN_Start(&hcan1);
 
-    if (utils_get_board_id() == BOARD_LEFT)
-    {
-        HAL_ADC_Start_DMA(&hadc1, (uint32_t *)air_press, 2);
-    }
     if (utils_get_board_id() == BOARD_MASTER)
     {
         HAL_TIM_Base_Start_IT(&TIM_SYNC);
@@ -147,7 +138,6 @@ int main(void)
 
     assi_init();
 
-    uint32_t time = 0;
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -160,13 +150,6 @@ int main(void)
         {
             visHandle();
         }
-
-        if (utils_get_board_id() == BOARD_LEFT && HAL_GetTick() - time > 50)
-        {
-            time = HAL_GetTick();
-            can_msg_send(&hcan1, CAN_AIR_BRAKE_PRESS_ID, (uint8_t[2]){press_front, press_rear}, 2);
-        }
-
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

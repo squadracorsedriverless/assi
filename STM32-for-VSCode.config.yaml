@@ -109,7 +109,7 @@ customMakefileRules:
   rule: bin2srec -a 0x8004000 -i $(BUILD_DIR)/$(TARGET).bin -o $(BUILD_DIR)/$(TARGET).srec
 
 - command: canflash
-  dependsOn: convert flash00 flash01 flash10 flash11
+  dependsOn: convert flash00 flash01 flash10 
   rule: ""
 
 - command: flash00

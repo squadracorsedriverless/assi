@@ -36,7 +36,6 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Core/Src/adc.c \
 Core/Src/assi.c \
 Core/Src/can.c \
 Core/Src/can_comms.c \
@@ -53,8 +52,6 @@ Core/Src/utils.c \
 Core/Src/visEffect.c \
 Core/Src/ws2812_spi.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
-Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.c \
-Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_can.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
@@ -277,7 +274,7 @@ convert:
 #######################################
 # canflash
 #######################################
-canflash: convert flash00 flash01 flash10 flash11
+canflash: convert flash00 flash01 flash10
 	
       
 
